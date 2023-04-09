@@ -4,11 +4,17 @@ Video Q&A Agent is a Command Line Interface (CLI) tool that allows you to intera
 
 ## Installation
 
-```
+```console
 pip install -r requirements/base.txt
 ```
 
 **Note**: You need to setup a `.env` file with your OpenAI keys. See `.env.example` for a reference.
+
+**Optional**: If you want to run whisper locally, you'll require to install `openai-whisper`:
+
+```console
+pip install openai-whisper
+```
 
 ## Usage
 

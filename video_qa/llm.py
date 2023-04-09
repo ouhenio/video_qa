@@ -23,7 +23,9 @@ class Agent:
             input_variables=["context", "question"], template=self.template
         )
         self.chain = load_qa_chain(
-            ChatOpenAI(temperature=0), chain_type="stuff", prompt=self.prompt_template
+            ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo"),
+            chain_type="stuff",
+            prompt=self.prompt_template,
         )
 
     def load_transcript(self, transcript_path):
