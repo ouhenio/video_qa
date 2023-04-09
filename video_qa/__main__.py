@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 
 from .llm import Agent
-from .whisper import WhisperTranscriber
+from .whisper import LocalWhisperTranscriber, WhisperTranscriber
 from .youtube import YouTubeDownloader
 
 
@@ -15,7 +15,7 @@ class VideoQA(cmd.Cmd):
     bold_end = "\033[0m"
     prompt = f"{bold_start}\nEnter your question: {bold_end}"
 
-    def __init__(self, video_url):
+    def __init__(self, video_url, whisper_model=None, use_local_whisper=False):
         super().__init__()
 
         # Load environment variables from .env file
@@ -30,7 +30,11 @@ class VideoQA(cmd.Cmd):
         audio_path = downloader.download_video(video_url)
         print(f"Video saved at {audio_path}")
 
-        transcriber = WhisperTranscriber(open_ai_key)
+        if use_local_whisper:
+            print("Using a local version of whisper.")
+            transcriber = LocalWhisperTranscriber(whisper_model)
+        else:
+            transcriber = WhisperTranscriber(open_ai_key)
         transcript, transcript_path = transcriber.transcribe(audio_path)
 
         self.agent = Agent()
@@ -61,7 +65,21 @@ if __name__ == "__main__":
         description="Interact with an LLM agent to ask questions about a YouTube video."
     )
     parser.add_argument("--url", required=True, help="YouTube video URL")
+    parser.add_argument(
+        "--use-local-whisper",
+        action="store_true",
+        help="Use local version of Whisper instead of OpenAI API",
+    )
+    parser.add_argument(
+        "--whisper-model",
+        default="base",
+        help="Specify the Whisper model version to use (default: base)",
+    )
 
     args = parser.parse_args()
 
-    VideoQA(args.url).cmdloop()
+    VideoQA(
+        args.url,
+        use_local_whisper=args.use_local_whisper,
+        whisper_model=args.whisper_model,
+    ).cmdloop()
