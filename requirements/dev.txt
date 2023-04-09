@@ -1,0 +1,5 @@
+-r ci.txt
+# these should be manually sync'ed with whats in .pre-commit-config.yaml
+black==23.1.0
+flake8==6.0.0
+isort==5.12.0

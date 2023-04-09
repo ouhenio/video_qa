@@ -1,9 +1,10 @@
-from langchain.indexes.vectorstore import VectorstoreIndexCreator
-from langchain.document_loaders import TextLoader
-from langchain.chains.question_answering import load_qa_chain
-from langchain import PromptTemplate
-from langchain.chat_models import ChatOpenAI
 from chromadb.errors import NotEnoughElementsException
+from langchain import PromptTemplate
+from langchain.chains.question_answering import load_qa_chain
+from langchain.chat_models import ChatOpenAI
+from langchain.document_loaders import TextLoader
+from langchain.indexes.vectorstore import VectorstoreIndexCreator
+
 
 class Agent:
     def __init__(self) -> None:
@@ -19,25 +20,22 @@ class Agent:
         User question: {question}
         """
         self.prompt_template = PromptTemplate(
-            input_variables=["context", "question"],
-            template=self.template
+            input_variables=["context", "question"], template=self.template
         )
         self.chain = load_qa_chain(
-            ChatOpenAI(temperature=0),
-            chain_type="stuff",
-            prompt=self.prompt_template
+            ChatOpenAI(temperature=0), chain_type="stuff", prompt=self.prompt_template
         )
 
     def load_transcript(self, transcript_path):
         index_creator = VectorstoreIndexCreator()
         loader = TextLoader(transcript_path)
         self.docsearch = index_creator.from_loaders([loader])
-    
+
     def query(self, query):
         try:
             docs = self.docsearch.vectorstore.similarity_search(query)
         except NotEnoughElementsException:
-            # When there are fewer elements in the index than the requested number of results, return all elements.
+            # If there are fewer elements in the index than 4, return 3.
             docs = self.docsearch.vectorstore.similarity_search(query, k=3)
 
         output = self.chain.run(input_documents=docs, question=query)
