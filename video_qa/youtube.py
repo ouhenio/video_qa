@@ -1,7 +1,9 @@
 import os
 
 import yt_dlp
+from rich.console import Console
 
+console = Console()
 
 class YouTubeDownloader:
     def __init__(self, output_directory="downloads"):
@@ -34,6 +36,6 @@ class YouTubeDownloader:
             if not os.path.isfile(file_path):
                 ydl.download([video_url])
             else:
-                print("Audio file already exists:", file_path)
+                console.print("Audio file already exists:", file_path, style="bold")
 
         return file_path

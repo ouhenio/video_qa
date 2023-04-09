@@ -3,6 +3,9 @@ import cmd
 import os
 
 from dotenv import load_dotenv
+from rich import print
+from rich.console import Console
+from rich.panel import Panel
 
 from .llm import Agent
 from .whisper.openai import WhisperTranscriber
@@ -10,10 +13,8 @@ from .youtube import YouTubeDownloader
 
 
 class VideoQA(cmd.Cmd):
-    # ANSI escape codes for bold text
-    bold_start = "\033[1m"
-    bold_end = "\033[0m"
-    prompt = f"{bold_start}\nEnter your question: {bold_end}"
+    console = Console()
+    prompt = "Enter your question: "
 
     def __init__(self, video_url, whisper_model=None, use_local_whisper=False):
         super().__init__()
@@ -26,14 +27,14 @@ class VideoQA(cmd.Cmd):
         open_ai_key = os.getenv("OPENAI_API_KEY")
 
         downloader = YouTubeDownloader()
-        print(f"About to download {video_url}")
+        self.console.print(f"About to download {video_url}", style="bold")
         audio_path = downloader.download_video(video_url)
-        print(f"Video saved at {audio_path}")
+        self.console.print(f"Video saved at {audio_path}", style="bold")
 
         if use_local_whisper:
             from .whisper.local import LocalWhisperTranscriber
 
-            print("Using a local version of whisper.")
+            self.console.print("Using a local version of whisper.", style="bold")
             transcriber = LocalWhisperTranscriber(whisper_model)
         else:
             transcriber = WhisperTranscriber(open_ai_key)
@@ -41,24 +42,28 @@ class VideoQA(cmd.Cmd):
 
         self.agent = Agent()
         self.agent.load_transcript(transcript_path=transcript_path)
-        print(
-            """
+        self.console.print(
+            Panel(
+                """
         You can now ask questions about the video.
         Type 'quit' or 'exit' to end the session.
-        """
+        """,
+                title="Instructions",
+                expand=False,
+            )
         )
 
     def default(self, line):
         if line.lower() in ["quit", "exit"]:
             return True
 
-        print("\n" + "=" * 40 + "\n")
+        self.console.print("\n" + "=" * 40 + "\n")
         agent_response = self.agent.query(line)
-        print(f"🤖 : {agent_response}")
-        print("\n" + "=" * 40)
+        self.console.print(f"🤖 : {agent_response}", style="bold")
+        self.console.print("\n" + "=" * 40)
 
     def do_EOF(self, line):
-        print("Exiting...")
+        self.console.print("Exiting...", style="bold")
         return True
 
 
