@@ -1,0 +1,5 @@
+.env
+.cache
+**/__pycache__
+**/.chroma
+**/downloads
