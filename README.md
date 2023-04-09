@@ -13,7 +13,7 @@ pip install -r requirements.txt
 ## Usage
 
 ```console
-python main.py --url "https://www.youtube.com/watch?v=X29p13cAT1g"
+python -m video_qa --url "https://www.youtube.com/watch?v=X29p13cAT1g"
 ```
 
 Example outputs:
