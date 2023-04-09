@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 
 from .llm import Agent
-from .whisper import LocalWhisperTranscriber, WhisperTranscriber
+from .whisper.openai import WhisperTranscriber
 from .youtube import YouTubeDownloader
 
 
@@ -31,6 +31,7 @@ class VideoQA(cmd.Cmd):
         print(f"Video saved at {audio_path}")
 
         if use_local_whisper:
+            from .whisper.local import LocalWhisperTranscriber
             print("Using a local version of whisper.")
             transcriber = LocalWhisperTranscriber(whisper_model)
         else:
