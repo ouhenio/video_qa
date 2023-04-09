@@ -32,6 +32,7 @@ class VideoQA(cmd.Cmd):
 
         if use_local_whisper:
             from .whisper.local import LocalWhisperTranscriber
+
             print("Using a local version of whisper.")
             transcriber = LocalWhisperTranscriber(whisper_model)
         else:

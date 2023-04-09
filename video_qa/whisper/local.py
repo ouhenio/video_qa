@@ -1,5 +1,7 @@
 import os
+
 import whisper
+
 
 class LocalWhisperTranscriber:
     def __init__(self, model_version):
@@ -36,4 +38,3 @@ class LocalWhisperTranscriber:
         )
 
         return full_transcript, transcript_path
-

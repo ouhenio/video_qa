@@ -1,8 +1,10 @@
 import os
-import openai
 
+import openai
 from dotenv import load_dotenv
 from pydub import AudioSegment
+
+
 class WhisperTranscriber:
     def __init__(self, api_key):
         load_dotenv()
@@ -105,6 +107,3 @@ class WhisperTranscriber:
         )
 
         return full_transcript, transcript_path
-
-
-
