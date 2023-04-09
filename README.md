@@ -5,7 +5,7 @@ Video Q&A Agent is a Command Line Interface (CLI) tool that allows you to intera
 ## Installation
 
 ```
-pip install -r requirements.txt
+pip install -r requirements/base.txt
 ```
 
 **Note**: You need to setup a `.env` file with your OpenAI keys. See `.env.example` for a reference.
