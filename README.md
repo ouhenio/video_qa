@@ -10,7 +10,7 @@ pip install -r requirements/base.txt
 
 **Note**: You need to setup a `.env` file with your OpenAI keys. See `.env.example` for a reference.
 
-**Optional**: If you want to run whisper locally, you'll require to install `openai-whisper`:
+**Optional**: If you want to run Whisper locally, you'll require installing `openai-whisper`:
 
 ```console
 pip install openai-whisper
@@ -18,9 +18,19 @@ pip install openai-whisper
 
 ## Usage
 
+To use the OpenAI API for transcription:
+
 ```console
 python -m video_qa --url "https://www.youtube.com/watch?v=X29p13cAT1g"
 ```
+
+To use the local Whisper model for transcription:
+
+```console
+python -m video_qa --url "https://www.youtube.com/watch?v=X29p13cAT1g" --use-local-whisper --whisper-model "base"
+```
+
+The --use-local-whisper flag enables the use of a local Whisper model for transcription, and the --whisper-model option allows you to specify the desired local Whisper model version (e.g., "base").
 
 Example outputs:
 
