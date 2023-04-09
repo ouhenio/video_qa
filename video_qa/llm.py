@@ -1,13 +1,32 @@
 from langchain.indexes.vectorstore import VectorstoreIndexCreator
 from langchain.document_loaders import TextLoader
 from langchain.chains.question_answering import load_qa_chain
-from langchain.llms import OpenAI
+from langchain import PromptTemplate
+from langchain.chat_models import ChatOpenAI
+from chromadb.errors import NotEnoughElementsException
 
 class Agent:
     def __init__(self) -> None:
-        self.chain = load_qa_chain(OpenAI(temperature=0), chain_type="stuff")
         self.docsearch = None
-        pass
+        self.template = """
+        You are a bot that consumes transcripts of youtube videos,
+        and answers questions of its content.
+
+        Your answers should be helpful, consise, and factual.
+
+        Video transcript: {context}
+
+        User question: {question}
+        """
+        self.prompt_template = PromptTemplate(
+            input_variables=["context", "question"],
+            template=self.template
+        )
+        self.chain = load_qa_chain(
+            ChatOpenAI(temperature=0),
+            chain_type="stuff",
+            prompt=self.prompt_template
+        )
 
     def load_transcript(self, transcript_path):
         index_creator = VectorstoreIndexCreator()
@@ -15,7 +34,12 @@ class Agent:
         self.docsearch = index_creator.from_loaders([loader])
     
     def query(self, query):
-        docs = self.docsearch.vectorstore.similarity_search(query)
+        try:
+            docs = self.docsearch.vectorstore.similarity_search(query)
+        except NotEnoughElementsException:
+            # When there are fewer elements in the index than the requested number of results, return all elements.
+            docs = self.docsearch.vectorstore.similarity_search(query, k=3)
+
         output = self.chain.run(input_documents=docs, question=query)
 
         return output
