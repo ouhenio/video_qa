@@ -111,8 +111,8 @@ class WhisperTranscriber:
 
 
 class LocalWhisperTranscriber:
-    def __init__(self):
-        self.model = whisper.load_model("base")
+    def __init__(self, model_version):
+        self.model = whisper.load_model(model_version)
 
     def transcribe(self, audio_path):
         print("🗣️  Initializing Local Whisper transcriber...")
