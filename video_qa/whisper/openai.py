@@ -3,6 +3,10 @@ import os
 import openai
 from dotenv import load_dotenv
 from pydub import AudioSegment
+from rich import print
+from rich.console import Console
+
+console = Console()
 
 
 class WhisperTranscriber:
@@ -20,18 +24,22 @@ class WhisperTranscriber:
         audio = AudioSegment.from_mp3(audio_path)
         duration = audio.duration_seconds
         est_cost = duration * self.openai_price / 60
-        print(f"↪ 💵 Estimated cost: ${est_cost:.2f} ({(duration / 60):.2f} minutes)")
+        console.print(
+            f"↪ 💵 Estimated cost: ${est_cost:.2f} ({(duration / 60):.2f} minutes)",
+            style="bold",
+        )
 
         if file_size > 25 * 1024 * 1024:
-            print(
+            console.print(
                 f"""
             ↪ The audio file is too large:
-            {(file_size / 1024 / 1024):.2f} MB (>25MB), chunking..."""
+            {(file_size / 1024 / 1024):.2f} MB (>25MB), chunking...""",
+                style="bold",
             )
 
             # check if chunks already exist
             if os.path.exists(f"downloads/whisper/{file_name.split('.')[0]}_0.mp3"):
-                print("↪ Chunks already exist, loading...")
+                console.print("↪ Chunks already exist, loading...", style="bold")
                 for i in range(100):
                     chunk_name = f"downloads/whisper/{file_name.split('.')[0]}_{i}.mp3"
                     if os.path.exists(chunk_name):
@@ -60,15 +68,15 @@ class WhisperTranscriber:
         return audio_list
 
     def transcribe(self, audio_path):
-        print("🗣️  Initializing Whisper transcriber...")
+        console.print("🗣️  Initializing Whisper transcriber...", style="bold")
 
         audio_list = self.chunk(audio_path)
-        print(f"↪ Chunk size: {len(audio_list)}")
+        console.print(f"↪ Chunk size: {len(audio_list)}", style="bold")
 
         transcriptions = []
 
         for audio in audio_list:
-            print(f"\t↪ Transcribing {audio}...")
+            console.print(f"\t↪ Transcribing {audio}...", style="bold")
 
             # Check if the transcript already exists
             transcript_path = f"{audio.split('.')[0]}.txt"
@@ -89,10 +97,11 @@ class WhisperTranscriber:
                 with open(transcript_path, "w") as f:
                     f.write(transcript)
                     transcriptions.append(transcript)
-                    print(
+                    console.print(
                         f"""
                     \t\t↪ saved transcript to {audio.split('.')[0]}.txt
-                    (words: {len(transcript.split())}"""
+                    (words: {len(transcript.split())}""",
+                        style="bold",
                     )
             else:
                 # Load the transcript from the text file
@@ -101,9 +110,10 @@ class WhisperTranscriber:
                 pass
 
         full_transcript = " ".join(transcriptions)
-        print(
+        console.print(
             f"""↪ Total words: {len(full_transcript.split())}
-            -- characters: {len(full_transcript)}"""
+            -- characters: {len(full_transcript)}""",
+            style="bold",
         )
 
         return full_transcript, transcript_path
