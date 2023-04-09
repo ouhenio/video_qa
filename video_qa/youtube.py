@@ -5,6 +5,7 @@ from rich.console import Console
 
 console = Console()
 
+
 class YouTubeDownloader:
     def __init__(self, output_directory="downloads"):
         self.output_directory = output_directory

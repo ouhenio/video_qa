@@ -5,6 +5,7 @@ from rich.console import Console
 
 console = Console()
 
+
 class LocalWhisperTranscriber:
     def __init__(self, model_version):
         self.model = whisper.load_model(model_version)
@@ -27,7 +28,7 @@ class LocalWhisperTranscriber:
                     f"""
                 \t\t↪ saved transcript to {audio_path.split('.')[0]}.txt
                 \t↪ word count: {len(full_transcript.split())}""",
-                    style="bold"
+                    style="bold",
                 )
 
         else:
@@ -38,7 +39,7 @@ class LocalWhisperTranscriber:
         console.print(
             f"""↪ Total words: {len(full_transcript.split())}
             ↪ Total characters: {len(full_transcript)}""",
-            style="bold"
+            style="bold",
         )
 
         return full_transcript, transcript_path
